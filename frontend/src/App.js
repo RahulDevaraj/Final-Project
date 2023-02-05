@@ -1,16 +1,18 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+//Public Pages
 import HomePage from "./pages/HomePage";
 import ProductListPage from "./pages/ProductListPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import CartPage from "./pages/CartPage";
+//User Pages
 import UserProfilePage from "./pages/user/UserProfilePage";
 import UserOrderDetailsPage from "./pages/user/UserOrderDetailsPage";
 import UserOrdersPage from "./pages/user/UserOrdersPage";
 import UserCartDetailsPage from "./pages/user/UserCartDetailsPage";
-import ProtectedRoutesComponent from "./pages/components/ProtectedRoutesComponent";
-
+import ProtectedRoutesComponent from "./components/ProtectedRoutesComponent";
+//Admin Pages
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
@@ -20,17 +22,28 @@ import AdminEditProductPage from "./pages/admin/AdminEditProductPage";
 import AdminCreateProductPage from "./pages/admin/AdminCreateProductPage";
 import AdminChatsPage from "./pages/admin/AdminChatsPage";
 import AdminAnalyticsPage from "./pages/admin/AdminAnalyticsPage";
+//Header and Footer
+import HeaderComponent from "./components/HeaderComponent";
+import FooterComponent from "./components/FooterComponent";
+
+import RoutesWithUserChatComponent from "./components/user/RoutesWithUserChatComponent";
 function App() {
   return (
     <BrowserRouter>
+      <HeaderComponent />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/product-list" element={<ProductListPage />} />
-        <Route path="/product-details" element={<ProductDetailsPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/cart" element={<CartPage />} />
-
+        <Route element={<RoutesWithUserChatComponent />}>
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/product-list" element={<ProductListPage />} />
+          <Route path="/product-details" element={<ProductDetailsPage />} />
+          <Route path="product-details/:id" element={<ProductDetailsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="*" element="Page Not FOund" />
+        </Route>
+        {/* Admin Routes */}
         <Route element={<ProtectedRoutesComponent admin={false} />}>
           <Route path="/user" element={<UserProfilePage />} />
           <Route path="/user/my-orders" element={<UserOrdersPage />} />
@@ -41,6 +54,9 @@ function App() {
           />
         </Route>
 
+        {
+          //Admin Routes
+        }
         <Route element={<ProtectedRoutesComponent admin={true} />}>
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/edit-user" element={<AdminEditUserPage />} />
@@ -62,6 +78,7 @@ function App() {
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
         </Route>
       </Routes>
+      <FooterComponent />
     </BrowserRouter>
   );
 }
