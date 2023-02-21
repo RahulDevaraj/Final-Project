@@ -3,6 +3,9 @@ const app = express();
 const port = 3000;
 
 const apiRoutes = require("./routes/apiRoutes");
+const connectdb = require("./config/db");
+
+connectdb();
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello World!" });
