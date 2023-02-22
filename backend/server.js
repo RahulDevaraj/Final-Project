@@ -4,10 +4,11 @@ const port = 3000;
 
 const apiRoutes = require("./routes/apiRoutes");
 const connectdb = require("./config/db");
+const Product = require("./models/ProductModel");
 
 connectdb();
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res, next) => {
   res.json({ message: "Hello World!" });
 });
 app.get("/a", (req, res, next) => {
