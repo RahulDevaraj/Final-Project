@@ -11,7 +11,7 @@ const AddedToCartMessageComponent = () => {
       onClose={() => setShow(false)}
       dismissible
     >
-      <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+      <Alert.Heading>You got an error!</Alert.Heading>
       <p>
         <Button variant="success">Back</Button>{" "}
         <Link to="/cart">

@@ -6,7 +6,7 @@ const RatingFilterComponent = () => {
   return (
     <>
       <span className="fw-bold">Rating</span>
-      {Array.from({ length: 5 }).map((e, idx) => {
+      {Array.from({ length: 6 }).map((e, idx) => {
         return (
           <Fragment key={idx}>
             <Form.Check type="checkbox" id={`check-api-${idx}`} key={idx}>
