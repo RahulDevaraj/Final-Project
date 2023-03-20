@@ -27,7 +27,9 @@ const UserOrderDetailsPage = () => {
               <h2>Payment method</h2>
               <Form.Select disabled={false}>
                 <option value="pp">PayPal</option>
-                <option value="cod">Cash On Delivery</option>
+                <option value="cod">
+                  Cash On Delivery (delivery may be delayed)
+                </option>
               </Form.Select>
             </Col>
             <Row>
@@ -47,7 +49,7 @@ const UserOrderDetailsPage = () => {
           <h2>Order items</h2>
           <ListGroup variant="flush">
             {Array.from({ length: 3 }).map((item, idx) => (
-              <CartItemComponent key={idx} />
+              <CartItemComponent item={{image: {path:"/images/tablets-category.png"}, name: "Product name", price:10, count:10, quantity:10}} key={idx} />
             ))}
           </ListGroup>
         </Col>
@@ -83,3 +85,4 @@ const UserOrderDetailsPage = () => {
 };
 
 export default UserOrderDetailsPage;
+
