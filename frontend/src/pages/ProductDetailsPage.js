@@ -8,31 +8,43 @@ import {
   Button,
   Alert,
 } from "react-bootstrap";
-import AddedToCartMessageComponent from "../components/AddedToCartMessageComponent";
 import { Rating } from "react-simple-star-rating";
+import AddedToCartMessageComponent from "../components/AddedToCartMessageComponent";
+
 import ImageZoom from "js-image-zoom";
 import { useEffect } from "react";
+
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/actions/cartActions";
+
 const ProductDetailsPage = () => {
+    const dispatch = useDispatch()
+
+    const addToCartHandler = () => {
+        dispatch(addToCart());
+    }
+
+    const products = useSelector((state) => state.cart.value);
+
   var options = {
+    // width: 400,
+    // zoomWidth: 500,
+    // fillContainer: true,
+    // zoomPosition: "bottom",
     scale: 2,
     offset: { vertical: 0, horizontal: 0 },
-    width: 400,
-    zoomwidth: 500,
-    zoomposition: "bottom",
-    fillcontainer: true,
   };
   useEffect(() => {
     new ImageZoom(document.getElementById("first"), options);
     new ImageZoom(document.getElementById("second"), options);
     new ImageZoom(document.getElementById("third"), options);
     new ImageZoom(document.getElementById("fourth"), options);
-  }, []);
+  });
   return (
     <Container>
       <AddedToCartMessageComponent />
       <Row className="mt-5">
-        <Col md={4} style={{ zIndex: 1 }}>
-          {" "}
+        <Col style={{ zIndex: 1 }} md={4}>
           <div id="first">
             <Image
               crossOrigin="anonymous"
@@ -57,10 +69,9 @@ const ProductDetailsPage = () => {
         <Col md={8}>
           <Row>
             <Col md={8}>
-              {" "}
               <ListGroup variant="flush">
                 <ListGroup.Item>
-                  <h1>Product Name</h1>
+                  <h1>Product name {products}</h1>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Rating readonly size={20} initialValue={4} /> (1)
@@ -69,16 +80,16 @@ const ProductDetailsPage = () => {
                   Price <span className="fw-bold">$345</span>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  lorem asd asd asdas dasdasdasd asd awedaw ads
+                  Porta ac consectetur ac Lorem ipsum dolor, sit amet
+                  consectetur adipisicing elit. Perferendis, illo.
                 </ListGroup.Item>
               </ListGroup>
             </Col>
             <Col md={4}>
               <ListGroup>
-                <ListGroup.Item>Status : In stock</ListGroup.Item>
+                <ListGroup.Item>Status: in stock</ListGroup.Item>
                 <ListGroup.Item>
-                  {" "}
-                  Price <span className="fw-bold">$345</span>
+                  Price: <span className="fw-bold">$345</span>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   Quantity:
@@ -90,18 +101,18 @@ const ProductDetailsPage = () => {
                   </Form.Select>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <Button variant="danger">Add to Cart</Button>
+                  <Button onClick={addToCartHandler} variant="danger">Add to cart</Button>
                 </ListGroup.Item>
               </ListGroup>
             </Col>
           </Row>
           <Row>
-            <Col className="mt-4">
+            <Col className="mt-5">
               <h5>REVIEWS</h5>
               <ListGroup variant="flush">
                 {Array.from({ length: 10 }).map((item, idx) => (
                   <ListGroup.Item key={idx}>
-                    John <br />
+                    John Doe <br />
                     <Rating readonly size={20} initialValue={4} />
                     <br />
                     20-09-2001 <br />
@@ -127,7 +138,7 @@ const ProductDetailsPage = () => {
               <option value="2">2 (bad)</option>
               <option value="1">1 (awful)</option>
             </Form.Select>
-            <Button variant="primary" className="mt-3 mb-3">
+            <Button className="mb-3 mt-3" variant="primary">
               Submit
             </Button>
           </Form>
@@ -138,3 +149,4 @@ const ProductDetailsPage = () => {
 };
 
 export default ProductDetailsPage;
+
