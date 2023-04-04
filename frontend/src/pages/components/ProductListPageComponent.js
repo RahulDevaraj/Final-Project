@@ -8,7 +8,7 @@ import CategoryFilterComponent from "../../components/filterQueryResultOptions/C
 import AttributesFilterComponent from "../../components/filterQueryResultOptions/AttributesFilterComponent";
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const ProductListPageComponent = ({ getProducts, categories }) => {
   const [products, setProducts] = useState([]);
@@ -19,11 +19,18 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
   const [showResetFiltersButton, setShowResetFiltersButton] = useState(false);
 
   const [filters, setFilters] = useState({}); // collect all filters
-    const [price, setPrice] = useState(500);
-    const [ratingsFromFilter, setRatingsFromFilter] = useState({});
-    const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
+  const [price, setPrice] = useState(500);
+  const [ratingsFromFilter, setRatingsFromFilter] = useState({});
+  const [categoriesFromFilter, setCategoriesFromFilter] = useState({});
+  const [sortOption, setSortOption] = useState("");
+  const [paginationLinksNumber, setPaginationLinksNumber] = useState(null);
+  const [pageNum, setPageNum] = useState(null);
 
   const { categoryName } = useParams() || "";
+  const { pageNumParam } = useParams() || 1;
+  const { searchQuery } = useParams() || "";
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (categoryName) {
@@ -41,33 +48,54 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
   }, [categoryName, categories]);
 
   useEffect(() => {
-    getProducts()
+    if (Object.entries(categoriesFromFilter).length > 0) {
+      setAttrsFilter([]);
+      var cat = [];
+      var count;
+      Object.entries(categoriesFromFilter).forEach(([category, checked]) => {
+        if (checked) {
+          var name = category.split("/")[0];
+          cat.push(name);
+          count = cat.filter((x) => x === name).length;
+          if (count === 1) {
+            var index = categories.findIndex((item) => item.name === name);
+            setAttrsFilter((attrs) => [...attrs, ...categories[index].attrs]);
+          }
+        }
+      });
+    }
+  }, [categoriesFromFilter, categories]);
+
+  useEffect(() => {
+    getProducts(categoryName, pageNumParam, searchQuery, filters, sortOption)
       .then((products) => {
         setProducts(products.products);
+        setPaginationLinksNumber(products.paginationLinksNumber);
+        setPageNum(products.pageNum);
         setLoading(false);
       })
       .catch((er) => {
         console.log(er);
         setError(true);
       });
-      console.log(filters);
-  }, [filters]);
+  }, [categoryName, pageNumParam, searchQuery, filters, sortOption]);
 
   const handleFilters = () => {
-      setShowResetFiltersButton(true);
-      setFilters({
-          price: price,
-          rating: ratingsFromFilter,
-          category: categoriesFromFilter,
-          attrs: attrsFromFilter,
-      })
-  }
+     navigate(location.pathname.replace(/\/[0-9]+$/, "")); 
+    setShowResetFiltersButton(true);
+    setFilters({
+      price: price,
+      rating: ratingsFromFilter,
+      category: categoriesFromFilter,
+      attrs: attrsFromFilter,
+    });
+  };
 
   const resetFilters = () => {
-      setShowResetFiltersButton(false);
-      setFilters({});
-      window.location.href = "/product-list";
-  }
+    setShowResetFiltersButton(false);
+    setFilters({});
+    window.location.href = "/product-list";
+  };
 
   return (
     <Container fluid>
@@ -75,18 +103,24 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
         <Col md={3}>
           <ListGroup variant="flush">
             <ListGroup.Item className="mb-3 mt-3">
-              <SortOptionsComponent />
+              <SortOptionsComponent setSortOption={setSortOption} />
             </ListGroup.Item>
             <ListGroup.Item>
               FILTER: <br />
               <PriceFilterComponent price={price} setPrice={setPrice} />
             </ListGroup.Item>
             <ListGroup.Item>
-              <RatingFilterComponent setRatingsFromFilter={setRatingsFromFilter} />
+              <RatingFilterComponent
+                setRatingsFromFilter={setRatingsFromFilter}
+              />
             </ListGroup.Item>
-            <ListGroup.Item>
-              <CategoryFilterComponent setCategoriesFromFilter={setCategoriesFromFilter} />
-            </ListGroup.Item>
+            {!location.pathname.match(/\/category/) && (
+              <ListGroup.Item>
+                <CategoryFilterComponent
+                  setCategoriesFromFilter={setCategoriesFromFilter}
+                />
+              </ListGroup.Item>
+            )}
             <ListGroup.Item>
               <AttributesFilterComponent
                 attrsFilter={attrsFilter}
@@ -94,9 +128,13 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
               />
             </ListGroup.Item>
             <ListGroup.Item>
-              <Button variant="primary" onClick={handleFilters}>Filter</Button>{" "}
+              <Button variant="primary" onClick={handleFilters}>
+                Filter
+              </Button>{" "}
               {showResetFiltersButton && (
-                <Button onClick={resetFilters} variant="danger">Reset filters</Button>
+                <Button onClick={resetFilters} variant="danger">
+                  Reset filters
+                </Button>
               )}
             </ListGroup.Item>
           </ListGroup>
@@ -120,7 +158,14 @@ const ProductListPageComponent = ({ getProducts, categories }) => {
               />
             ))
           )}
-          <PaginationComponent />
+          {paginationLinksNumber > 1 ? (
+            <PaginationComponent
+              categoryName={categoryName}
+              searchQuery={searchQuery}
+              paginationLinksNumber={paginationLinksNumber}
+              pageNum={pageNum}
+            />
+          ) : null}
         </Col>
       </Row>
     </Container>
